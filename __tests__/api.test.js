@@ -1,6 +1,6 @@
 const app = require('../app.js');
 const request = require('supertest');
-
+const endpoints = require('../endpoints.json')
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
@@ -14,6 +14,17 @@ beforeEach(() => {
 });
 
 describe('app', () => {
+  describe("GET /api", () => {
+    test("responds with status 200 and the documentation object", () => {
+      return request(app)
+        .get("/api").expect(200)
+        .then((response) => {
+          expect(
+          response.body.endpoints
+          ).toEqual(endpoints);
+        });
+    });
+  });
   describe("api/topics", () => {
     test("200: responds with an array of topic object", () => {
       return request(app).get("/api/topics").expect(200).then((response) => {
