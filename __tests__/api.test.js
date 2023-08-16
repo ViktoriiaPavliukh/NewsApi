@@ -141,14 +141,12 @@ describe("app", () => {
          expect(comments).toBeSortedBy("created_at", { descending: true });
        });
     });
-    test("404: responds with an error message when given a non-existent article_id", () => {
+    test("200: responds with an empty array when no comments are found for the given article_id", () => {
       return request(app)
-        .get("/api/articles/9999/comments")
-        .expect(404)
+        .get("/api/articles/7/comments")
+        .expect(200)
         .then((response) => {
-          expect(response.body.msg).toBe(
-            "No comments found for article_id: 9999"
-          );
+          expect(response.body.comments).toEqual([]);
         });
     });
 
@@ -157,7 +155,7 @@ describe("app", () => {
         .get("/api/articles/not-an-article/comments")
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("Invalid article_id");
+          expect(response.body.msg).toBe("Invalid id");
         });
     });
   });
