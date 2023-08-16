@@ -1,6 +1,7 @@
-const app = require('../app.js');
-const request = require('supertest');
-const endpoints = require('../endpoints.json')
+const app = require("../app.js");
+const request = require("supertest");
+const { toBeSortedBy } = require("jest-sorted");
+const endpoints = require("../endpoints.json");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
@@ -13,7 +14,7 @@ beforeEach(() => {
   return seed(data);
 });
 
-describe('app', () => {
+describe("app", () => {
   describe("GET /api", () => {
     test("responds with status 200 and the documentation object", () => {
       return request(app)
@@ -49,7 +50,40 @@ describe('app', () => {
         expect(topics.length).toBe(3);
       });
   });
-  describe('/api/articles/:article_id', () => {
+  describe("api/articles", () => {
+    test("200: responds with an array of articles object", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("article_id", expect.any(Number));
+            expect(article).toHaveProperty("title", expect.any(String));
+            expect(article).toHaveProperty("topic", expect.any(String));
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty(
+            "article_img_url",
+            expect.any(String));
+            expect(article).toHaveProperty(
+            "comment_count",
+            expect.any(String));
+          });
+        });
+    });
+    test("200: should return articles sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+  });
+  describe("/api/articles/:article_id", () => {
     test("GET:200 sends a single article", () => {
       return request(app)
         .get("/api/articles/1")
@@ -68,23 +102,23 @@ describe('app', () => {
           });
         });
     });
-      test('404: responds with a 404 error and an error message when a valod id which does not exist is given', () => {
-        return request(app)
-          .get('/api/articles/999')
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe('No article found for article_id: 999');
-          });
-      });
-      test("400: responds with a 400 and sends an error message when given an invalid id", () => {
-        return request(app)
-          .get("/api/articles/not-an-article-id")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid id");
-          });
-      });
-  })  
-})
-
-
+    test("404: responds with a 404 error and an error message when a valod id which does not exist is given", () => {
+      return request(app)
+        .get("/api/articles/999")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe(
+            "No article found for article_id: 999"
+          );
+        });
+    });
+    test("400: responds with a 400 and sends an error message when given an invalid id", () => {
+      return request(app)
+        .get("/api/articles/not-an-article-id")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid id");
+        });
+    });
+  });
+});
