@@ -57,7 +57,8 @@ describe("app", () => {
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
-          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toBeInstanceOf(Array)
+          expect(articles.length).toBe(13);
           articles.forEach((article) => {
             expect(article).toHaveProperty("article_id", expect.any(Number));
             expect(article).toHaveProperty("title", expect.any(String));
