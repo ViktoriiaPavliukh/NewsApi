@@ -26,9 +26,6 @@ exports.selectArticleById = (article_id) => {
       }
       return result.rows[0];
     })
-    .catch((err) => {
-      throw err;
-    });
 };
 
 exports.selectCommentsByArticleId = (article_id) => {
@@ -38,12 +35,14 @@ exports.selectCommentsByArticleId = (article_id) => {
       [article_id]
     )
     .then((result) => {
-      if (result.rows.length === 0) {
-        return [];
-      }
       return result.rows;
     })
-    .catch((err) => {
-      throw err;
-    });
 };
+
+
+
+
+
+
+
+
