@@ -158,5 +158,15 @@ describe("app", () => {
           expect(response.body.msg).toBe("Invalid id");
         });
     });
+    test("404: responds with an error message when given a non-existent article_id", () => {
+      return request(app)
+        .get("/api/articles/1000/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe(
+            "No article found for article_id: 1000"
+          );
+        });
+    });
   });
 });
