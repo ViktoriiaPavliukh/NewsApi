@@ -26,13 +26,23 @@ exports.selectArticleById = (article_id) => {
       }
       return result.rows[0];
     })
-    .catch((err) => {
-      if (err.code === "22P02") {
-        return Promise.reject({
-          status: 400,
-          msg: "Invalid id",
-        });
-      }
-      throw err;
-    });
 };
+
+exports.selectCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
+      [article_id]
+    )
+    .then((result) => {
+      return result.rows;
+    })
+};
+
+
+
+
+
+
+
+
