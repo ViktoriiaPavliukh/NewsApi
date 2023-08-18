@@ -2,7 +2,8 @@ const {
   selectArticleById,
   selectArticles,
   selectCommentsByArticleId,
-  addComment
+  addComment, 
+  checkUserExists
 } = require("../models/article.models");
 
 exports.getArticles = (req, res, next) => {
@@ -49,7 +50,7 @@ exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
 
-  selectArticleById(article_id)
+  checkUserExists(username)
     .then(() => {
       addComment(article_id, username, body)
         .then((comment) => {
@@ -61,5 +62,7 @@ exports.postComment = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
-    });  
+    });
 };
+
+

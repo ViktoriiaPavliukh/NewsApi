@@ -187,7 +187,25 @@ describe("POST api/articles/:article_id/comments", () => {
         });
       });
     });
-  });  
+  }); 
+  test("201: ignores extra properties and responds with the new comment", () => {
+    const newCommentWithExtras = {
+      username: "icellusedkars",
+      body: "This is a new comment.",
+      randomKey: "ignore me",
+    };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(newCommentWithExtras)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toMatchObject({
+          article_id: 7,
+          body: "This is a new comment.",
+          author: "icellusedkars",
+        });
+      });
+  }); 
   test("400: responds with an error if required properties are missing", () => {
     const newComment = {
       username: "icellusedkars",
@@ -200,6 +218,34 @@ describe("POST api/articles/:article_id/comments", () => {
       expect(response.body.msg).toBe("404 Bad Request: Missing required properties");
       });
     });
+  test("400: responds with an error for an invalid article ID", () => {
+     const newComment = {
+       username: "icellusedkars",
+       body: "This is a new comment.",
+     };
+     return request(app)
+       .post("/api/articles/not-a-number/comments")
+       .send(newComment)
+       .expect(400)
+       .then((response) => {
+         expect(response.body.msg).toBe("Invalid id");
+       });
+   });  
+    test("404: responds with an error if username does not exist", () => {
+      const newComment = {
+        username: "nonexistentuser", // 
+        body: "This is a new comment.",
+      };
+      return request(app)
+        .post("/api/articles/7/comments")
+        .send(newComment)
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe(
+            "No user found for username: nonexistentuser"
+          );
+        });
+    }); 
   test("404: responds with an error if article ID does not exist", () => {
     const newComment = {
       username: "icellusedkars",
@@ -211,7 +257,7 @@ describe("POST api/articles/:article_id/comments", () => {
       .expect(404)
       .then((response) => {
       expect(response.body.msg).toBe(
-        "No article found for article_id: 1000"
+        "404 Not found"
       );
     });
   });

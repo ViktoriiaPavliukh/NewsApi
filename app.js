@@ -31,7 +31,11 @@ app.use((err, req, res, next) => {
     res
       .status(400)
       .send({ msg: "404 Bad Request: Missing required properties" });
-  } else {
+  } else if (err.code === "23503") {
+    res
+      .status(404)
+      .send({ msg: "404 Not found" });
+    } else {
     next(err);
   }
 })
@@ -45,8 +49,5 @@ app.use((err, req, res, next) => {
   }
 });
 
-// app.use((err, req, res, next) => {
-//   res.status(500).send({ msg: "Internal Server Error"});
-// })
 
 module.exports = app;
