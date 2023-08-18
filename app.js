@@ -30,7 +30,7 @@ app.use((err, req, res, next) => {
   } else if (err.code === "23502") {
     res
       .status(400)
-      .send({ msg: "404 Bad Request: Missing required properties" });
+      .send({ msg: "Bad Request: Missing required properties" });
   } else if (err.code === "23503") {
     res
       .status(404)

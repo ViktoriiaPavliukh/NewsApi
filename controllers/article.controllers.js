@@ -32,19 +32,15 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
 
   selectArticleById(article_id)
-    .then(() => {
-      selectCommentsByArticleId(article_id)
-        .then((comments) => {
-          res.status(200).send({ comments });
-        })
-        .catch((err) => {
-          next(err);
-        });
+    .then(() => selectCommentsByArticleId(article_id))
+    .then((comments) => {
+      res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
     });
 };
+
 
 exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
@@ -52,17 +48,13 @@ exports.postComment = (req, res, next) => {
 
   checkUserExists(username)
     .then(() => {
-      addComment(article_id, username, body)
-        .then((comment) => {
-          res.status(201).send({ comment: comment });
-        })
-        .catch((err) => {
-          next(err);
-        });
+      return addComment(article_id, username, body);
+    })
+    .then((comment) => {
+      res.status(201).send({ comment: comment });
     })
     .catch((err) => {
       next(err);
     });
 };
-
 

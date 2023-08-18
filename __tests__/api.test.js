@@ -215,7 +215,7 @@ describe("POST api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-      expect(response.body.msg).toBe("404 Bad Request: Missing required properties");
+      expect(response.body.msg).toBe("Bad Request: Missing required properties");
       });
     });
   test("400: responds with an error for an invalid article ID", () => {
