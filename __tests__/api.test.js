@@ -96,7 +96,7 @@ describe("app", () => {
             topic: "mitch",
             author: "butter_bridge",
             body: "I find this existence challenging",
-            created_at: `2020-07-09T18:11:00.000Z`,
+            created_at: `2020-07-09T19:11:00.000Z`,
             votes: 100,
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -259,6 +259,65 @@ describe("POST api/articles/:article_id/comments", () => {
       expect(response.body.msg).toBe(
         "404 Not found"
       );
+    });
+  });
+  describe("PATCH /api/articles/:article_id", () => {
+    test("200: updates an article's votes", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ votes: 10 })
+        .expect(200)
+        .then((response) => {
+          expect(response.body.article).toMatchObject({
+            article_id: 1,
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 110,
+          });
+        });
+    });
+
+    test("200: decrements an article's votes", () => {
+      return request(app)
+        .patch("/api/articles/9")
+        .send({ votes: -1 })
+        .expect(200)
+        .then((response) => {
+          expect(response.body.article).toMatchObject({
+            article_id: 9,
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: -1,
+          });
+        });
+    });
+
+    test("404: responds with an error when article_id does not exist", () => {
+      return request(app)
+        .patch("/api/articles/1000")
+        .send({ votes: 10 })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe(
+            "No article found for article_id: 1000"
+          );
+        });
+    });
+
+    test("400: responds with an error for invalid input", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ votes: "invalid" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid input");
+        });
     });
   });
 });
