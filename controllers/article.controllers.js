@@ -4,7 +4,8 @@ const {
   selectCommentsByArticleId,
   addComment, 
   checkUserExists, 
-  updateArticleVotes
+  updateArticleVotes, 
+  deleteCommentById
 } = require("../models/article.models");
 
 exports.getArticles = (req, res, next) => {
@@ -73,5 +74,17 @@ exports.updateArticle = (req, res, next) => {
    .catch((err) => { 
      next(err);
    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+
+  deleteCommentById(comment_id)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 

@@ -320,4 +320,38 @@ describe("POST api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("204: successfully deletes a comment by comment_id", () => {
+      const testComment = { username: "icellusedkars", body: "Test comment" };
+      return request(app)
+        .post("/api/articles/7/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body: { comment } }) => {
+          const comment_id = comment.comment_id;
+          return request(app)
+            .delete(`/api/comments/${comment_id}`)
+            .expect(204)
+            .then(() => {
+              return db.query("SELECT * FROM comments WHERE comment_id = $1", [
+                comment_id,
+              ]);
+            })
+            .then((result) => {
+              expect(result.rows.length).toBe(0);
+            });
+        });
+    });
+
+    test("400: responds with Invalid id for invalid comment_id when deleting comments", () => {
+      const invalidCommentId = "invalid_id";
+
+      return request(app)
+        .delete(`/api/comments/${invalidCommentId}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid id");
+        });
+    });
+  });
 });
