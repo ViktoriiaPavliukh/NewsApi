@@ -5,10 +5,23 @@ const {
   addComment, 
   checkUserExists, 
   updateArticleVotes, 
-  deleteCommentById
+  deleteCommentById,
+  getArticlesByTopic
 } = require("../models/article.models");
 
 exports.getArticles = (req, res, next) => {
+  const { topic } = req.query;
+  if (topic) {
+    getArticlesByTopic(topic)
+      .then((articles) => {
+        res.status(200).send({
+          articles: articles,
+        });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
   selectArticles()
     .then((articles) => {
       res.status(200).send({
@@ -17,6 +30,7 @@ exports.getArticles = (req, res, next) => {
     }).catch((err) => {
       next(err);
     });
+  }  
 };
 
 exports.getArticleById = (req, res, next) => {
