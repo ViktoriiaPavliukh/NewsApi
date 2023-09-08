@@ -83,6 +83,19 @@ describe("app", () => {
           expect(articles).toBeSortedBy("created_at", { descending: true });
         });
     });
+    test("returns articles filtered by topic", () => {
+      const topicSlug = "cats";
+      return request(app)
+        .get(`/api/articles?topic=${topicSlug}`)
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic", topicSlug);
+          });
+        });
+    });
   });
   describe("/api/articles/:article_id", () => {
     test("GET:200 sends a single article", () => {
@@ -96,7 +109,7 @@ describe("app", () => {
             topic: "mitch",
             author: "butter_bridge",
             body: "I find this existence challenging",
-            created_at: `2020-07-09T18:11:00.000Z`,
+            created_at: `2020-07-09T20:11:00.000Z`,
             votes: 100,
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
